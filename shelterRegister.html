@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Shelter login</title>
+</head>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap-combined.min.css">
+<link rel="stylesheet" href="https://octopusgump.github.io/globalhack6/style.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+<script type="text/javascript" src="https://rawgit.com/betsol/angular-input-date/master/src/angular-input-date.js"></script>
+<link rel="stylesheet" type="text/css" href="style.css">
+<body>
+  <!--NEEDED TO BE FIXED: TARGET POPULATION/ -->
+  <div class="topbar">
+    <a id="logo" href=""><img src="image/logo.png" alt="logo"></a>
+    <a id="login" href=""><h3>Login</h3></a>
+    <a id="signup" href=""><h3>SignUp</h3></a>
+  </div>
+  <div class="bgContainer" ng-controller="shelterController" ng-app="shelterForm">
+    <form class="userForm" name="shelterForm" class="css-form"  novalidate>
+      <h4>Email</h4><input type="email" ng-model="shelter.email" name="shelterEmail" placeholder="example@domain.com" required><br/>
+      <h4>Address</h4> <input type="address" ng-model="shelter.address" name="shelterAddress" placeholder="Your Address, St. Louis, MO 63101" required><br/>
+      <h4>Organization ID</h4> <input type="text" ng-model="shelter.id" name="shelterID" placeholder="Enter your assigned ID" required><br/>
+      <h4>Capacity</h4> <input type="number" ng-model="shelter.capacity" name="shelterCapacity" placeholder="Enter the number of people your place hold" required><br/>
+      <h4>Phone</h4> <input type="text" ng-model='shelter.phone' phone name="shelterPhone" ng-change="shelter.cellPhone='+1'+shelter.phone" placeholder="(###)###-###" required> <br/>
+      <h4>Website</h4> 
+      <input type="url" name="website" ng-model="shelter.website" placeholder="www.example.com" required><br/>
+<!--       <span class="error" ng-show="shelterForm.website.$error.required">Required!</span>
+      <span class="error" ng-show="shelterForm.website.$error.url">Not valid url!</span> -->
+
+      <h4>Gender Accept</h4>
+      <select name="gender" ng-model="shelter.gender" required><br/>
+        <option value="">---Please select---</option> <!-- not selected / blank option -->
+        <option value="0">male only</option> <!-- interpolation -->
+        <option value="1">female only</option>
+        <option value="2">All</option>
+      </select><br/>
+
+      <div class="shelterPopulation">
+      <h4>Age of Your Target Population</h4>
+      <input  type="number" placeholder="Min Age" ng-model="shelter.minAge" > 
+      <input type="number" placeholder="Max Age" ng-model="shelter.maxAge"> 
+      </div>
+      <br/>
+
+      <h4>Domestic Violence victims</h4> <input type="checkbox" ng-model="shelter.DV" name="DV" ng-true-value="1" 
+      ng-false-value="0" ng-init="shelter.DV='0'" ng-disabled="shelter.NA"/> <br/>
+      <h4>Persons with HIV/AIDS</h4> <input type="checkbox" ng-model="shelter.HIV" name="HIV" ng-true-value="1" 
+      ng-false-value="0" ng-init="shelter.HIV='0'" /> <br/>
+      <h4>Not Applicable</h4> <input type="checkbox" name="NA" ng-model="shelter.NA" ng-click="clearTargetPopulation()"/> <br/>
+
+      <h4>Service</h4>
+      <h5>shower</h5><input type="checkbox" ng-model="shelter.shower" name="hasShower" ng-true-value="1" 
+      ng-false-value="0" ng-init="shelter.shower='0'"/> <br/>
+      <h5>food</h5><input type="checkbox" ng-model="shelter.food" name="hasFood" ng-true-value="1" 
+      ng-false-value="0" ng-init="shelter.food='0'"/> <br/>
+
+      <h4>Password</h4> <input data-ng-model='shelter.password' type="password" name='password' placeholder='password' required>                   
+      <h4>Confirm Password</h4> <input ng-model='shelter.password_verify' type="password" name='confirm_password' placeholder='confirm password' required data-password-verify="shelter.password" required> <br/>
+      <div ng-show="shelterForm.confirm_password.$error.passwordVerify">Fields are not equal!</div>
+
+
+      <h4>I agree to the terms and conditions</h4> 
+      <input type="checkbox" ng-model="shelter.agree" name="shelterAgree"  value="1" required/> <br />
+      <!-- <pre>shelter = {{shelter | json}}</pre> -->
+
+      <input class="button" type="submit" ng-click="submit(shelter)" value="Submit"/>
+    </form>
+
+  </div>
+
+</body>
+
+</html>
+
+<script>
+  var app=angular.module('shelterForm', []);
+  app.controller('shelterController', ['$scope', '$http',function($scope,$http) {
+
+    $scope.shelter = {
+      'isShelter': '1'
+    };
+
+    $scope.clearTargetPopulation=function(){
+      $scope.shelter.DV = '0';
+      $scope.shelter.HIV = '0';
+    };
+
+    $scope.submit=function(shelter){
+      if ($scope.shelterForm.$valid)
+        return $http.post('http://localhost:8000/create', user).then(function(response){console.log(response.data)}, function(){console.log("send failure")});
+    };
+
+  }]);
+
+  //password
+  app.directive("passwordVerify", function() {
+   return {
+    require: "ngModel",
+    scope: {
+      passwordVerify: '='
+    },
+    link: function(scope, element, attrs, ctrl) {
+      scope.$watch(function() {
+        var combined;
+
+        if (scope.passwordVerify || ctrl.$viewValue) {
+         combined = scope.passwordVerify + '_' + ctrl.$viewValue; 
+       }                    
+       return combined;
+     }, function(value) {
+      if (value) {
+        ctrl.$parsers.unshift(function(viewValue) {
+          var origin = scope.passwordVerify;
+          if (origin !== viewValue) {
+            ctrl.$setValidity("passwordVerify", false);
+            return undefined;
+          } else {
+            ctrl.$setValidity("passwordVerify", true);
+            return viewValue;
+          }
+        });
+      }
+    });
+    }
+  };
+});
+
+  //SSN Filter
+  app.directive('ssn', function () {
+    function makeSsn (value) {
+      var result = value;
+
+      var ssn = value ? value.toString() : '';
+      if (ssn.length > 3) {
+        result = ssn.substr(0, 3) + '-';
+        if (ssn.length > 5) {
+          result += ssn.substr(3, 2) + '-';
+          result += ssn.substr(5, 4);
+        }
+        else {
+          result += ssn.substr(3);
+        }
+      }
+
+      return result;
+    }
+
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function (scope, element, attrs, ngModel) {
+        ngModel.$formatters.push(function (value) {
+          return makeSsn(value);
+        });
+
+        // clean output as digits
+        ngModel.$parsers.push(function (value) {
+          var cursorPosition = element[0].selectionStart;
+          var oldLength = value.toString().length;
+          var nonDigits = /[^0-9]/g;
+          var intValue = value.replace(nonDigits, '');
+          if (intValue.length > 9) {
+            intValue = intValue.substr(0, 9);
+          }
+          var newValue = makeSsn(intValue);
+          ngModel.$setViewValue(newValue);
+          ngModel.$render();
+          element[0].setSelectionRange(cursorPosition + newValue.length - oldLength, cursorPosition + newValue.length - oldLength);
+          return intValue;
+        });
+      }
+    };
+  });
+
+//Phone number filter
+app.directive('phone', function($filter, $browser) {
+  return {
+    require: 'ngModel',
+    link: function($scope, $element, $attrs, ngModelCtrl) {
+      var listener = function() {
+        var value = $element.val().replace(/[^0-9]/g, '');
+        $element.val($filter('tel')(value, false));
+      };
+
+            // This runs when we update the text field
+            ngModelCtrl.$parsers.push(function(viewValue) {
+              return viewValue.replace(/[^0-9]/g, '').slice(0,10);
+            });
+
+            // This runs when the model gets updated on the scope directly and keeps our view in sync
+            ngModelCtrl.$render = function() {
+              $element.val($filter('tel')(ngModelCtrl.$viewValue, false));
+            };
+
+            $element.bind('change', listener);
+            $element.bind('keydown', function(event) {
+              var key = event.keyCode;
+                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
+                // This lets us support copy and paste too
+                if (key == 91 || (15 < key && key < 19) || (37 <= key && key <= 40)){
+                  return;
+                }
+                $browser.defer(listener); // Have to do this or changes don't get picked up properly
+              });
+
+            $element.bind('paste cut', function() {
+              $browser.defer(listener);
+            });
+          }
+
+        };
+      });
+app.filter('tel', function () {
+  return function (tel) {
+    console.log(tel);
+    if (!tel) { return ''; }
+
+    var value = tel.toString().trim().replace(/^\+/, '');
+
+    if (value.match(/[^0-9]/)) {
+      return tel;
+    }
+
+    var country, city, number;
+
+    switch (value.length) {
+      case 1:
+      case 2:
+      case 3:
+      city = value;
+      break;
+
+      default:
+      city = value.slice(0, 3);
+      number = value.slice(3);
+    }
+
+    if(number){
+      if(number.length>3){
+        number = number.slice(0, 3) + '-' + number.slice(3,7);
+      }
+      else{
+        number = number;
+      }
+
+      return ("(" + city + ") " + number).trim();
+    }
+    else{
+      return "(" + city;
+    }
+
+  };
+});
+
+</script>

@@ -1,0 +1,278 @@
+<!-- 
+#CCE7CE
+#47AA42
+#368032
+#F0C808
+#1282BF
+-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Homes - User Sign Up</title>
+</head>
+<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.0.4/css/bootstrap-combined.min.css">
+<link rel="stylesheet" href="https://octopusgump.github.io/swd/style.css">
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+<script type="text/javascript" src="https://rawgit.com/betsol/angular-input-date/master/src/angular-input-date.js"></script>
+
+<!-- <link rel="stylesheet" type="text/css" href="style.css"> -->
+
+<body>
+  <div class="topbar">
+    <a id="logo" href="user-login.html"><img src="https://octopusgump.github.io/swd//logo.png" alt="logo"></a>
+    <a id="login" href="/"><h3>Login</h3></a>
+    <a id="signup" href="/user/register"><h3>SignUp</h3></a>
+  </div>
+  <div class="bgContainer" ng-controller="userController" ng-app="userForm" novalidate>
+    <form name="userForm" class="css-form"  novalidate>
+      <h4>First Name</h4>
+      <input type="text" ng-model="user.firstname" name="firstname" placeholder="Enter your first name" required/> <br/>  
+      <p ng-show="userForm.firstname.$invalid && !userForm.firstname.$pristine" class="help-block">Your first name is required.</p>   
+      <h4>Last Name</h4> 
+      <input type="text" ng-model="user.lastname" name="lastname" placeholder="Enter your last name" required><br/>
+      <p ng-show="userForm.lastname.$invalid && !userForm.lastname.$pristine" class="help-block">Your last name is required.</p>  
+
+      <h4>Password</h4> <input data-ng-model='user.password' type="password" name='password' placeholder='password' required><br/>
+      <h4>Confirm Password</h4> <input ng-model='user.password_verify' type="password" name='confirm_password' placeholder='confirm password' required data-password-verify="user.password" required> <br/>
+      <div ng-show="userForm.confirm_password.$error.passwordVerify">Fields are not equal!</div>                    
+
+      <h4>Age</h4> <input type="number" ng-model="user.age" name="age" placeholder="Enter your age" required><br/>
+      <h4>Phone</h4> <input type="text" ng-model='user.phone' phone name="phone" ng-change="user.cellPhone='+1'+user.phone" placeholder="(###)###-####" required> <br/>
+
+      <h4>Birthday</h4> <input type="date" ng-model="user.birthday" name="birthday" required=""><br/>
+
+      <h4>Gender</h4>
+      <h5>Male</h5><input type="radio" ng-model="user.gender" value="0" ng-required="!user.gender"/>
+      <h5>Female</h5><input type="radio" ng-model="user.gender" value="1" ng-required="!user.gender"/> <br/>
+      <br/>
+
+      <h4>SSN</h4> <input type="text" ng-model="user.ssn" placeholder="###-##-####" ng-init="user.ssn='0'"/><br/>
+
+      <h4>Email</h4> <input type="email" ng-model="user.email" name="email" placeholder="example@domain.com" /><br />
+
+      <h4>Ethnicity</h4> 
+      <select name="ethnicity" ng-model="user.ethnicity" required>
+        <option value="">---Please select---</option> <!-- not selected / blank option -->
+        <option value="white">White</option> <!-- interpolation -->
+        <option value="hispanicOrLatino">Hispanic or Latino</option>
+        <option value="blackOrAA">Black or African American</option>
+        <option value="nativeOrindian">Native American or American Indian</option>
+        <option value="asianOrPacific">Asian / Pacific Islander</option>
+        <option value="other">Other</option>
+      </select><br>
+
+      <h4>Veteran Status</h4>  
+      <h4 style="display:inline; font-weight:400;">Yes </h4><input style="margin-right: 15px;" type="radio" ng-model="user.veteran" value="1" ng-required="!user.veteran"/>
+      <h4 style="display:inline; font-weight:400;">No</h4><input type="radio" ng-model="user.veteran"  value="0" ng-required="!user.veteran"/> <br/>
+      <br/>
+
+      <h4 style="display:inline;">Need Employment</h4>  <input style="display:inline;" type="checkbox" ng-model="user.needJob" name="needEmployment" ng-true-value="1" 
+      ng-false-value="-1" ng-init="user.needJob='-1'"/> <br/>
+      <h4 style="display:inline;">Need education</h4>  <input style="display:inline;" type="checkbox" ng-model="user.needEducation" name="needEducation" value="1" ng-true-value="1" 
+      ng-false-value="-1" ng-init="user.needEducation='-1'"/> <br/>
+      <h4 style="display:inline;">Need medicare </h4>  <input style="display:inline;" type="checkbox" ng-model="user.medical" name="medical" value="1" ng-true-value="1" 
+      ng-false-value="-1" ng-init="user.medical='-1'"/> <br/><br/><br/>
+
+      <h4>Preferred transportation methods </h4>
+      <select name="transportation"  ng-model="user.transportation">
+        <option value="">---Please select---</option> <!-- not selected / blank option -->
+        <option value="car">Car</option> <!-- interpolation -->
+        <option value="walk">Walk</option>
+        <option value="public">Public transportation</option>
+      </select><br>
+      <h4>Number of Beds</h4> 
+      <input type="number" ng-model="user.bednumber" ><br/>
+
+      <h4>I agree to the terms and conditions</h4>
+      <input type="checkbox" ng-model="user.agree" name="userAgree"  value="1" required/> <br /><br/>
+<!--       <pre>user = {{!user | json}}</pre> -->
+      
+        <input class="buttonUser" id="userSubmit" type="submit" ng-click="submit(user)" value="Submit"/>
+    </form>
+
+  </div>
+  <div class="footer"></div>
+</body>
+
+</html>
+
+<script>
+  var app=angular.module('userForm', []);
+  app.controller('userController', ['$scope', '$http',function($scope,$http) {
+    $scope.user = {
+      'isShelter': '0',
+      'domesticViolence' : '0'
+    }
+    $scope.submit=function(user){
+      if ($scope.userForm.$valid)
+        return $http.post('http://localhost:8000/create', user)
+      .then(function(response){
+        console.log(response.data);
+        window.location.href="/user/profile";
+          }
+        , function(){console.log("send failure")});
+    };
+
+  }]);
+
+  //password
+  app.directive("passwordVerify", function() {
+   return {
+    require: "ngModel",
+    scope: {
+      passwordVerify: '='
+    },
+    link: function(scope, element, attrs, ctrl) {
+      scope.$watch(function() {
+        var combined;
+
+        if (scope.passwordVerify || ctrl.$viewValue) {
+         combined = scope.passwordVerify + '_' + ctrl.$viewValue; 
+       }                    
+       return combined;
+     }, function(value) {
+      if (value) {
+        ctrl.$parsers.unshift(function(viewValue) {
+          var origin = scope.passwordVerify;
+          if (origin !== viewValue) {
+            ctrl.$setValidity("passwordVerify", false);
+            return undefined;
+          } else {
+            ctrl.$setValidity("passwordVerify", true);
+            return viewValue;
+          }
+        });
+      }
+    });
+    }
+  };
+});
+
+  //SSN Filter
+  app.directive('ssn', function () {
+    function makeSsn (value) {
+      var result = value;
+
+      var ssn = value ? value.toString() : '';
+      if (ssn.length > 3) {
+        result = ssn.substr(0, 3) + '-';
+        if (ssn.length > 5) {
+          result += ssn.substr(3, 2) + '-';
+          result += ssn.substr(5, 4);
+        }
+        else {
+          result += ssn.substr(3);
+        }
+      }
+
+      return result;
+    }
+
+    return {
+      restrict: 'A',
+      require: 'ngModel',
+      link: function (scope, element, attrs, ngModel) {
+        ngModel.$formatters.push(function (value) {
+          return makeSsn(value);
+        });
+
+        // clean output as digits
+        ngModel.$parsers.push(function (value) {
+          var cursorPosition = element[0].selectionStart;
+          var oldLength = value.toString().length;
+          var nonDigits = /[^0-9]/g;
+          var intValue = value.replace(nonDigits, '');
+          if (intValue.length > 9) {
+            intValue = intValue.substr(0, 9);
+          }
+          var newValue = makeSsn(intValue);
+          ngModel.$setViewValue(newValue);
+          ngModel.$render();
+          element[0].setSelectionRange(cursorPosition + newValue.length - oldLength, cursorPosition + newValue.length - oldLength);
+          return intValue;
+        });
+      }
+    };
+  });
+
+//Phone number filter
+app.directive('phone', function($filter, $browser) {
+  return {
+    require: 'ngModel',
+    link: function($scope, $element, $attrs, ngModelCtrl) {
+      var listener = function() {
+        var value = $element.val().replace(/[^0-9]/g, '');
+        $element.val($filter('tel')(value, false));
+      };
+
+            // This runs when we update the text field
+            ngModelCtrl.$parsers.push(function(viewValue) {
+              return viewValue.replace(/[^0-9]/g, '').slice(0,10);
+            });
+
+            // This runs when the model gets updated on the scope directly and keeps our view in sync
+            ngModelCtrl.$render = function() {
+              $element.val($filter('tel')(ngModelCtrl.$viewValue, false));
+            };
+
+            $element.bind('change', listener);
+            $element.bind('keydown', function(event) {
+              var key = event.keyCode;
+                // If the keys include the CTRL, SHIFT, ALT, or META keys, or the arrow keys, do nothing.
+                // This lets us support copy and paste too
+                if (key == 91 || (15 < key && key < 19) || (37 <= key && key <= 40)){
+                  return;
+                }
+                $browser.defer(listener); // Have to do this or changes don't get picked up properly
+              });
+
+            $element.bind('paste cut', function() {
+              $browser.defer(listener);
+            });
+          }
+
+        };
+      });
+app.filter('tel', function () {
+  return function (tel) {
+    console.log(tel);
+    if (!tel) { return ''; }
+
+    var value = tel.toString().trim().replace(/^\+/, '');
+
+    if (value.match(/[^0-9]/)) {
+      return tel;
+    }
+
+    var country, city, number;
+
+    switch (value.length) {
+      case 1:
+      case 2:
+      case 3:
+      city = value;
+      break;
+
+      default:
+      city = value.slice(0, 3);
+      number = value.slice(3);
+    }
+
+    if(number){
+      if(number.length>3){
+        number = number.slice(0, 3) + '-' + number.slice(3,7);
+      }
+      else{
+        number = number;
+      }
+
+      return ("(" + city + ") " + number).trim();
+    }
+    else{
+      return "(" + city;
+    }
+
+  };
+});
+
+</script>

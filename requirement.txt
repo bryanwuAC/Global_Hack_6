@@ -1,0 +1,15 @@
+virtualenv
+tornado >= 4.0
+redis
+tornado-redis
+futures
+pycurl
+twisted
+pycares
+monotime
+motor
+pudb
+boto
+motorengine
+blinker
+werkzeug

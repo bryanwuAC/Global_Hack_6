@@ -1,0 +1,6 @@
+How to run this server:
+1. download the project
+2. run pip3 install -r requirement.txt
+3. python3 main.py
+
+Your server will be running at localhost:8000

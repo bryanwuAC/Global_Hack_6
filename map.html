@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
+   <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyD0R_2zpFYQ4UZtUrbGWFOJ5TfZD_SupYo&extension=.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+   <script src="http://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+   <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>-->
+
+   <style>
+      @import url('https://fonts.googleapis.com/css?family=Open+Sans:400,700');
+      #map{
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        position: absolute;
+        top: 0;
+        left: 0;
+    }
+    .infoWindowContent {
+        font-size:  14px !important;
+        border-top: 1px solid #ccc;
+        padding-top: 10px;
+    }
+    .bgContainerM{
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        margin: auto; 
+        width: 100%;
+    }
+    .bgContainerM h2 {
+        text-align: center;
+        font-family: 'Open Sans', sans-serif;
+        font-weight: 400;
+        color: #47AA42;
+        font-size: 21px;
+        margin-bottom:0;
+        margin-top: 0;
+    }
+    .bgContainerM input[type="text"], input{
+        position: relative;
+        top: 60px;
+        left: 20px;
+        width: 260px;
+        border: 2px solid #47AA42;
+        border-radius: 4px;
+        background-color: white;
+        padding: 12px 15px 12px 15px;
+        display: block;
+        margin-top: -10px;
+        -webkit-transition: width 0.4s ease-in-out;
+        transition: width 0.4s ease-in-out;
+        font-size: 15px;
+    }
+    .bgContainerM input[value]{
+        color: white;
+        font-size: 16px;
+    }
+    .bgContainerM::-webkit-input-placeholder { 
+        font-size:20px; 
+    }
+
+    .bgContainerM .button{
+        margin-top: -15px;
+        width: 294px;
+    }
+    .bgContainerM .button{
+        position: relative;
+        height: 40px;
+        width: 294px;
+        min-width: 100px;
+        margin-top: -7px;
+
+        border: none;
+        outline: none;
+
+        background: #1282BF;
+        border-radius: 3px;
+        box-shadow: 0 5px 0px #333533;
+
+        cursor: pointer;
+        display: inline-block;
+    }
+    .bgContainerM .button:hover{
+        background: #47AA42;
+        box-shadow: 0 4px 1px #368032;
+        border-bottom: 2px solid #368032;
+        transition: all 0.1s ease-in-out;
+    }
+    .bgContainerM .button:active{
+        transform:translateY(4px);
+        border-bottom-width: 2px;
+        box-shadow: none;
+    }
+    .bgContainerM .button h2{
+        color: #47AA42;
+        font-family: 'Open Sans', sans-serif;
+        font-size: 20px;
+        margin: 0;
+        position: relative;
+        text-align: center;
+    }
+    .sidebarM{
+        position: fixed;
+        width: 330px;
+        height: 100%;
+        margin: 0;
+        top: 0;
+        left: 0;
+        background: white;
+    }
+
+    .sidebarM h4{
+        color: #47AA42;
+        font-family: 'Open Sans', sans-serif;
+        display: block;
+        font-weight: 400;
+        font-size: 17px;
+        margin: 0;
+        padding: 0;
+    }
+    .sidebarM p{
+        font-family: 'Open Sans', sans-serif;
+        margin-top: 0;
+    }
+    .sidebarM a{
+        text-decoration: none;
+        margin: 0;
+    }
+    .sidebarM a h4{
+        margin: 0;
+        font-weight: 700;
+    }
+    .button h4{
+       color: white;
+   }
+   .detailshow{
+    position: relative;
+    left: 21px;
+    top: 0px;
+}
+.detailshow h5{
+    font-size: 14px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    margin: 0;
+    padding: 0;
+}
+.detailshow hr{
+    border: 1px solid #47AA42;
+} 
+.traffic{
+    width: 290px;
+    display: block;
+}
+
+.back{
+    margin-top: -15px;
+    width: 294px;
+}
+.back{
+    position: relative;
+    height: 40px;
+    width: 294px;
+    min-width: 100px;
+    margin-top: -7px;
+    top: 20px;
+    left: 20px;
+
+    border: none;
+    outline: none;
+
+    background: #47AA42;
+    border-radius: 3px;
+    box-shadow: 0 5px 0px #368032;
+
+    cursor: pointer;
+    display: inline-block;
+}
+.back:hover{
+    background: #1282BF;
+    box-shadow: 0 4px 1px #333533;
+    border-bottom: 2px solid #333533;
+    transition: all 0.1s ease-in-out;
+}
+.back:active{
+    transform:translateY(4px);
+    border-bottom-width: 2px;
+    box-shadow: none;
+}
+.back h2{
+    color: #47AA42;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 20px;
+    margin: 0;
+    position: relative;
+    text-align: center;
+}
+.shelterList{
+    width: 285px;
+}
+.shelterListMargin{
+    margin-top: 90px;
+    margin-left: -17px;
+}
+.shelterListMargin li{
+    list-style: none;
+}
+</style>
+</head>
+<body>
+    <div class="bgContainerM" ng-app="mapsApp" ng-controller="MapCtrl">
+        <div id="map"></div>
+        <div class="sidebarM">
+            <input class="back" type="button" onclick="location.href='/user/profile';" name="return" value="Return"/>
+            <input type="text" ng-model="request.address" name="request_address" placeholder="Search Your Current Address or Location"><br/>
+            <input type="text" ng-model="request.beds" name="request_beds" placeholder="Enter Number of Beds You need"><br/>
+            <input class="button" type="submit" ng-click="getLocation()" value="Search">
+            <div class="shelterListMargin">
+                <ul class="shelterList" ng-repeat="shelter in shelters | orderBy:'distance'" ng-hide="detail_show">
+                   <li>
+                      <a href="" ng-click="openInfoWindow($event, $index)">
+                       <h4>{{!shelter.ShelterName}}</h4>
+                       <p>{{!shelter.Address}}</p>
+                   </a>
+               </li>
+           </ul>
+       </div>
+
+       <div class="detailshow" ng-show="detail_show">
+        <h4>Recommended Arriving Time</h4> <h5>{{!detail.SuggestedTime}}</h5> <br>
+        <h4>Name</h4> <h5>{{!detail.ShelterName}} </h5><br>
+        <h4>Address</h4> <h5>{{!detail.Address}}</h5><br>
+        <h4>Hours</h4> <h5>{{!detail.Hours}}</h5><br>
+        <h4>Service</h4> <h5>{{!detail.Service}}</h5><br>
+        <h4>Available Space</h4> <h5>{{!detail.AvailableSpace}}/{{!detail.Capacity}} </h5><br>
+        <!-- line chart -->
+        <div class="traffic">
+            <hr>
+            <h4>Beds left Pedication</h4>
+            <br>
+            <canvas class="chart chart-line" chart-data="data" chart-labels="labels" chart-series="series" chart-options="options" chart-dataset-override="datasetOverride">
+            </canvas>     
+        </div>
+        <button class="button" ng-click="detail_show=false"><h4>Back to results</h4></button> <br>
+    </div>
+</div>
+</div>
+
+<script>
+    angular.module('mapsApp', [])
+    .controller('MapCtrl', function ($scope,$http,$filter) {
+
+
+       var mapOptions = {
+        zoom: 15,
+        center: new google.maps.LatLng(38.638719, -90.204893),
+        mapTypeId: google.maps.MapTypeId.TERRAIN
+    }
+    $scope.shelters = [];
+
+
+
+    $scope.map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+    //auto adjust center and zoom
+    var Latlngbounds = new google.maps.LatLngBounds();
+    for (var i = 0; i < $scope.shelters.length; i++) {
+
+        Latlngbounds.extend(new google.maps.LatLng($scope.shelters[i]['Lat'], $scope.shelters[i]['Long']));
+    }
+
+    $scope.map.fitBounds(Latlngbounds);
+
+
+    $scope.markers = [];
+    $scope.currentMarker = [];
+
+    //detailed information for the selected location
+    $scope.detail = {};
+
+    $scope.detail_show = false;
+    
+    var infoWindow = new google.maps.InfoWindow();
+
+    var redImage = {
+             url: 'http://www.monks-security.co.uk/images/icon/Map_pin_icon.png', // image is 512 x 512
+             scaledSize : new google.maps.Size(22, 32),
+         };
+
+         var currentImage ={
+            url: 'http://icon-park.com/imagefiles/location_map_pin_turquoise_blue6.png',
+            scaledSize: new google.maps.Size(30, 40),
+        };
+
+        var createMarker = function (info,i){
+
+            var marker = new google.maps.Marker({
+                map: $scope.map,
+                position: new google.maps.LatLng(info.Lat, info.Long),
+                title: info.ShelterName,
+                address: info.Address,
+                icon: redImage,
+                animation: google.maps.Animation.DROP,
+                label: i+""
+
+            });
+            marker.content = '<div class="infoWindowContent">' + info.address + '</div>';
+            google.maps.event.addListener(marker, 'click', function(){
+                infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.address);
+                infoWindow.open($scope.map, marker);
+                $scope.detail = $scope.shelters[parseInt(marker.label)-1];
+
+                $scope.detail_show = true;
+                $scope.$apply();
+
+            });
+
+            $scope.markers.push(marker);
+
+        }  
+        var createCurrentMarker = function (info){
+
+            var marker = new google.maps.Marker({
+                map: $scope.map,
+                position: new google.maps.LatLng(info.lat, info.long),
+                title: "Your location",
+                animation: google.maps.Animation.DROP,
+                icon: currentImage,
+                label: i+""
+
+            });
+            marker.content = '<div class="infoWindowContent">' + info.address + '</div>';
+
+            google.maps.event.addListener(marker, 'click', function(){
+                infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
+                infoWindow.open($scope.map, marker);
+                $scope.detail = info;
+
+                $scope.detail_show = false;
+                $scope.$apply();
+
+            });
+
+            $scope.currentMarker.push(marker);
+
+        }  
+
+
+        $scope.openInfoWindow = function(e, i){
+            var marker = $scope.markers[i];
+            e.preventDefault();
+            infoWindow.setContent('<h2>' + marker.title + '</h2>' + marker.content);
+            infoWindow.open($scope.map, marker);
+            $scope.detail = $scope.shelters[i];
+            $scope.detail_show = true;
+
+        }
+    //NEED REAL USER ID!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    $scope.request ={
+        'userid': '8e336728d4fa13339d66c87cd89b855e'
+    };
+
+    $scope.getLocation=function(){
+        console.log($scope.request.address);
+        var geocoder =  new google.maps.Geocoder();
+        geocoder.geocode( {'address': $scope.request.address}, function(results, status) {
+          if (status == google.maps.GeocoderStatus.OK) {
+            $scope.$apply(function(){
+                $scope.request.long=results[0].geometry.location.lng();
+                $scope.request.lat=results[0].geometry.location.lat();
+                initialLocation = new google.maps.LatLng($scope.request.lat, $scope.request.long);
+                $scope.map.setCenter(initialLocation);
+                createCurrentMarker($scope.request);
+               // createCurrentMarker();
+               return $http.post('http://localhost:8000/data/get', $scope.request).then(function(response){console.log(response.data);
+                    //SET PIN
+                    //SORT THE RESPONSE BY DISTANCE TO THE CURRENT LOCATION
+
+                    for(var i=0;i<response.data.data.length;i++){
+                        $scope.shelters[i] = response.data.data[i];
+                        createMarker($scope.shelters[i],i+1);
+                    };
+                    for(var i=0;i<$scope.shelters.length;i++){
+                        console.log("lat: "+$scope.shelters[i].lat+" lng:"+$scope.shelters[i].lng);
+                    }
+
+                    console.log("shelter updated");
+                    
+
+
+                }, function(){console.log("send failure")});
+           });
+
+} else {
+
+}
+});
+};
+});
+</script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,129 @@
+<!-- 
+#CCE7CE
+#47AA42
+#368032
+#F0C808
+#1282BF
+-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home|User Profile</title>
+	<link rel="stylesheet" type="text/css" href="https://octopusgump.github.io/swd/style.css">
+<!-- 	<link rel="stylesheet" type="text/css" href="style.css"> -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+</head>
+<body ng-app="userProfile">
+
+	<div class="sidebar">
+		<!-- <a href=""><img src="image/logo.png"></a> -->
+		<a href="/user/map"><h3>Housing</h3></a>
+		<hr>
+		<a href="#"><h3>Profile</h3></a>
+		<!-- <a href="#userHistory"><h3>History</h3></a> -->
+		<img src="https://octopusgump.github.io/swd/usericon.png"/>
+
+		<a href="/"><h4>Logout</h4></a>
+	</div>
+
+	<div class="userInfo" ng-controller='userController'>
+		<div class="userProfile">
+			<h1>{{!user.FirstName}} {{!user.LastName}}</h1>
+			<h2>Profile</h2>
+			<table>
+				<tbody>
+					<tr>
+						<td class="tdHighlight"> Birthday</td>
+						<td>{{!user.Birthday}}</td>
+						<td class="tdHighlight">Phone</td>
+						<td>{{!user.Phone}}</td>
+					</tr>
+					<tr>
+						<td class="tdHighlight">Gender</td>
+						<td>{{!user.Gender}}</td>
+						<td class="tdHighlight">SSN</td>
+						<td>{{!user.SSN}}</td>
+					</tr>
+					<tr>
+						<td class="tdHighlight">Ethnicity</td>
+						<td>{{!user.Ethnicity}}</td>
+						<td class="tdHighlight">Veteran Status</td>
+						<td>{{!user.Veteran==1? 'Yes' : (user.Veteran==0? 'No' : '')}}</td>
+	
+					</tr>
+					<tr>
+						<td class="tdHighlight">Prefered Transportation</td>
+						<td>{{!user.Transportation}}</td>
+						<td class="tdHighlight">Employment Status</td>
+						<td>{{!user.NeedJob==1?'No':(user.NeedJob==0?'Yes':'')}}</td>
+					</tr>
+					<tr>
+						<td class="tdHighlight">Education Needed</td>
+						<td>{{!user.NeedEducation==1? 'Yes' : (user.NeedEducation==0? 'No' : '')}}</td>
+						<td class="tdHighlight">Medical Support</td>
+						<td>{{!user.Medical}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="userHistory">
+			<h2>History</h2>
+			<table class="footable">
+				<thead>
+					<tr class="tableHeader">
+						<th data-class="expand">Date</th>
+						<th data-hide="phone">Shelter</th>
+						<th data-hide="phone,tablet">Time Arrived</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>October 17th, 2016</td>
+						<td><b>Gateway 180</b>-1000 19th St, St. Louis, MO 63106</td>
+						<td>4:00pm</td>
+					</tr>
+					<tr>
+						<td>October 16th, 2016</td>
+						<td><b>Gateway 180</b>-1000 19th St, St. Louis, MO 63106</td>
+						<td>4:30pm</td>
+					</tr>
+					<tr>
+						<td>October 15th, 2016</td>
+						<td><b>St Patrick Center</b>-800 N Tucker Blvd, St. Louis, MO 63101</td>
+						<td>5:30pm</td>
+					</tr>
+				</tbody>
+			</table>		
+		</div>
+	</div>
+
+
+<script>
+var app=angular.module('userProfile', []);
+  app.controller('userController',function($scope,$http) {
+   $scope.userid = {
+    "userid": "8e336728d4fa13339d66c87cd89b855e",
+    "isShelter":"0"
+	}
+
+	$scope.getData = function(){
+
+	$http.put('http://localhost:8000/update', $scope.userid)
+      .then(function(response){
+        console.log(response.data.data[0]);
+        $scope.user = response.data.data[0];
+      }, function(){
+        console.log("send failure");
+
+    });
+	}
+
+	$scope.getData();
+	
+
+});
+
+
+</script>
+</body>
+</html>

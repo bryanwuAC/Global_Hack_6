@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+<meta charset="utf-8">
+<title>Shelter</title>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+<style type="text/css">
+</style>
+</head>
+<body>
+<div ng-app="myApp" ng-controller="formCtrl">
+  <form>
+    <h1>Contact</h1>
+    Name: <input type="text" n1g-model="shelter.shelterName"/>
+  <!--   Phone Number: <input type="text" ng-model="shelter.phone"> -->
+    Size: <input type="text" ng-model="shelter.size"/>
+    Available Space<input type="number" ng-model="shelter.availableSpace"/>
+    Email: <input type="email" ng-model="shelter.email"/>
+<!--     Address: <input type="text" ng-model="shelter.address"/> -->
+    WaitList: <input type="number" ng-model="shelter.waitlist"/>
+    Service: <input type="text" ng-model="shelter.service"/>
+    Password: <input type="password" ng-model="shelter.password">
+
+
+    <button ng-click="myFunction()">Print Json</button>
+    <button ng-click="sendData()">Send Data</button>
+    <button ng-click="getData()">Get Data()</button>
+
+
+</form>
+
+<div>
+
+<!--   sample for rendering list -->
+  <ul>
+    <li ng-repeat="x in users ">
+      {{! x.FirstName + ', ' + x.LastName + ',' + x.SSN }}
+    </li>
+  </ul>
+</div>
+
+
+</div>
+
+
+
+
+<script>
+var app = angular.module('myApp', []);
+app.controller('formCtrl', function($scope,$http) {
+  $scope.shelter = {
+    "isShelter" : "1"
+  };
+
+
+  //see how data is formatted as json automatically
+  $scope.myFunction = function() {
+      console.log($scope.shelter);
+  }
+
+  $scope.userid = {
+    'userid':"25d55ad283aa400af464c76d713c07ad"
+  }
+
+  // sample for sending data to sever
+  $scope.sendData = function() {
+    $http.post('http://localhost:8000/data/get', $scope.userid)
+      .then(function(response){
+        //success callback
+        $scope.users = response.data.result
+      }, function(){
+        //failure callback
+        console.log("send failure");
+
+    });
+
+  }
+
+  
+    
+   // sample for getting data from server 
+  $scope.getData = function(){
+    $http.get("http://localhost:8000/activated/7096170593576ceacbfe8da8aec36")
+    .then(function(response) {
+      //process data
+      $scope.response = response.data;
+      if ($scope.response.result == 'fail'){
+        console.log($scope.response.reason)
+      } else {
+        //$scope.user = response.data
+      }
+      
+    });
+  }
+
+
+  //dummy data
+  // $scope.user = {
+  //   'email': 'wanran@wustl.edu',
+  //   'username' : "wanran",
+  //   'people': [
+  //       {name:'Jani',country:'Norway'},
+  //       {name:'Carl',country:'Sweden'},
+  //       {name:'Margareth',country:'England'},
+  //       {name:'Hege',country:'Norway'},
+  //       {name:'Joe',country:'Denmark'},
+  //       {name:'Gustav',country:'Sweden'},
+  //       {name:'Birgit',country:'Denmark'},
+  //       {name:'Mary',country:'England'},
+  //       {name:'Kai',country:'Norway'}
+  //       ]
+  // };
+
+});
+
+
+</script>
+
+</body>

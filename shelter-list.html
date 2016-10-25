@@ -1,0 +1,76 @@
+<!doctype html>
+<html ng-app="plunker">
+  <head>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.0.5/angular.js"></script>
+    <script src="http://angular-ui.github.com/bootstrap/ui-bootstrap-tpls-0.2.0.js"></script>
+<!--    <script src="example.js"></script>-->
+    <link rel="stylesheet" type="text/css" href="https://octopusgump.github.io/swd/bootstrap-combined.min.css">
+    <link rel="stylesheet" type="text/css" href="https://octopusgump.github.io/swd/style.css">
+    <style type="text/css">
+    .button h4{
+      color: white;
+    }
+    a{
+      text-decoration: none !important;
+    }
+    </style>
+  </head>
+  <body>
+  <a class="return" href="/shelter/profile"><h2>&#9664</h2></a>
+
+<div class="bgContainer2" ng-app="plunker" ng-controller="AccordionDemoCtrl">
+  <h2>Client Checkout</h2>
+  <accordion>
+    <accordion-group ng-repeat="user in user_list " heading="{{!user.FirstName+user.LastName}}" is-open="false">
+      <h4><b>Name:</b></h4> <h4>{{!user.FirstName+ " " +user.LastName}} </h4> <br/>
+      <h4><b>Gender:</b></h4> <h4>{{!user.Gender}}</h4> <br/>
+      <h4><b>Age:</b></h4> <h4>{{!user.Age}} </h4> <br/>
+      <h4><b>SSN:</b></h4> <h4>{{!user.SSN}} </h4> <br/>
+      <h4><b>Phone:</b></h4> <h4>{{!user.Phone}} </h4> <br/>
+      </accordion-group>    
+
+  </accordion>
+  <input class="button" type="submit" value="Check Out All People" ng-click="checkOut()"/>
+  <br>
+  <br>
+  
+
+  </div>
+</body>
+</html>
+
+<script>
+var app=angular.module('plunker', ['ui.bootstrap']);
+app.controller('AccordionDemoCtrl', function($http,$scope) {
+
+  $scope.user_list = [];
+  $scope.checkout={};
+
+  $scope.userid={"userid":"7096170593576ceacbfe8da8aec36f3d"};
+    
+    $scope.get_list=function(){
+    $http.post('http://localhost:8000/list/get', $scope.userid)
+      .then(
+        //search success
+        function(response){
+          console.log(response);
+          $scope.user_list =angular.fromJson(response.data.data);
+            });
+        },
+        //search fail
+        function(){
+          console.log("send failure");
+        }
+
+    $scope.get_list();
+
+    $scope.checkOut=function(){
+      $scope.checkout.userid="7096170593576ceacbfe8da8aec36f3d";
+      $scope.checkout.checkAll="1";
+      return $http.put('http://localhost:8000/center/checkout', $scope.checkout).then(function(response){console.log(response.data)}, function(){console.log("send failure")});
+    };
+  
+});
+
+
+</script>

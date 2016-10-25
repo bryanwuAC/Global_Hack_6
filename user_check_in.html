@@ -1,0 +1,155 @@
+<html>
+<head>
+  <title>User Check in</title>
+</head>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://octopusgump.github.io/swd/style.css">
+
+
+<body>
+  <a class="return" href="/shelter/profile"><h2>&#9664</h2></a >
+  <div  class="bgContainer2" ng-app="user_checkin" ng-controller="checkInCtrl" ng-init="record_find=false" ng-init="show_custom=false">
+    <form name="form" class="css-form" novalidate>
+      <div>
+        <h1>Guest name</h1>
+        <input type="text" ng-model="user.phone" name="uName" required/>
+        <br/>
+        <input class="button" type="button" ng-click="get_user_info()" value="Search"/>
+      </div>
+
+      <div ng-show="record_find==true"> 
+        <br/>
+        <h3>Name: </h3>{{!kkk.FirstName+" "+kkk.LastName}}<br/>
+        <h3>Gender: </h3>{{!kkk.Gender==1? 'Male' : (kkk.Gender==0? 'Female': '')}}<br/>
+        <h3>Age: </h3>{{!kkk.Age}}<br/>
+        <h3>SSN: </h3>{{!kkk.SSN}}<br/>
+        <h3>Veteran: </h3>{{!kkk.Veteran==1? 'Yes' : (kkk.Veteran==0? 'No' : '')}}<br/>
+        <h3>Available Spaces: </h3>{{!num_available_space}}</br>
+        <hr>
+        <h3>Actual Bed(s) Needed: </h3>{{!kkk.bedNumber}}</br>
+
+        
+        <input class="checkbox" type="checkbox" ng-click="custom_switch()" placeholder="Space need" />
+        <div ng-show="show_custom">
+          <input type="text" ng-model="user.bedNumber" name="uBedNumber"/>
+        </div>
+        <br/>
+
+        <input id="checkindone" class="button" type="button" ng-click="check_in_confirm()" value="Check in"/><br><br>
+        <input class="button" type="button" ng-click="cancel()" value="Cancel"/>
+      </div>
+
+    </form>
+  </div>
+  <div class="coverBackground">
+    <div class="coverCell1">
+      <a href="/shelter/profile"><h1>Welcome!</h1></a>
+    </div>
+    <div class="coverCell2">
+     <a href=""><h2>Another Check In</h2></a>
+   </div>
+ </div>
+</body>
+
+</html>
+
+
+<script>
+  $(document).ready(function(){
+
+    $( "#checkindone" ).click(function() {
+      $(".coverBackground").delay(130).animate({top: "0%"}, 850);
+    });
+
+  });
+
+  var app=angular.module('user_checkin', []);
+  app.controller('checkInCtrl', function($http, $scope){
+    $scope.user={
+      "userid": "7096170593576ceacbfe8da8aec36f3d",
+      "bedNumber": "2"
+//        "Veteran": "1",
+//        "SSN": "12342342",
+//        "Phone": "+1314660281",
+//        "LastName": "Zhou",
+//        "FirstName": "Diqiu",
+//        "Age": "1",
+//        "Gender": "1"
+};
+
+$scope.record_find=false;
+$scope.show_custom=false;
+$scope.num_available_space=0;
+
+$scope.valid = false;
+
+$scope.custom_switch=function(){
+  $scope.show_custom=!$scope.show_custom;
+}
+
+$scope.get_user_info = function() {
+  $http.put('http://localhost:8000/data/get', $scope.user)
+  .then(
+            //search success
+            function(response){
+              // $scope.kkk = angular.fromJson(response.data.data);
+              if (response.data.result == 'success'){
+                $scope.kkk = angular.fromJson(response.data.data[0]);
+
+                $scope.num_available_space=angular.fromJson(response.data.availableSpace);
+                $scope.record_find=true;
+              }else {
+                alert(response.data.reason);
+              }
+              
+            },
+            //search fail
+            function(){
+              console.log("send failure");
+            }
+            );
+}
+
+
+$scope.user={
+  'userid': '7096170593576ceacbfe8da8aec36f3d'
+};
+
+
+  $scope.user.customize = $scope.show_custom;
+$scope.CurrentDate = new Date();
+$scope.user.time = $scope.CurrentDate.getHours()+""+$scope.CurrentDate.getMinutes();
+console.log($scope.user.userid);
+console.log($scope.user.phone);
+
+$scope.user.bedNumber = "2";
+$scope.check_in_confirm=function(){
+  console.log($scope.user);
+  $http.post('http://localhost:8000/center/checkin', $scope.user)
+  .then(
+            //search success
+            function(response){
+              console.log(response.data);
+                $scope.kkk = angular.fromJson(response.data.data);
+              //console.log($scope.kkk[0].SSN);
+            },
+            //search fail
+            function(){
+              console.log("send failure");
+            }
+            );
+
+}
+
+$scope.cancel=function(){
+  $scope.user={};
+  $scope.record_find=false;
+}
+
+
+
+
+
+});
+</script>

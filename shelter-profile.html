@@ -1,0 +1,113 @@
+<!-- 
+#CCE7CE
+#47AA42
+#368032
+#F0C808
+#1282BF
+-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Home|User Profile</title>
+	<link rel="stylesheet" type="text/css" href="https://octopusgump.github.io/swd/style.css">
+<!-- 	<link rel="stylesheet" type="text/css" href="style.css"> -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.2.1/Chart.js"></script>
+  	<script src="http://cdn.jsdelivr.net/angular.chartjs/latest/angular-chart.min.js"></script>
+</head>
+<body ng-app="shelterProfile">
+
+	<div class="sidebar">
+		<!-- <a href=""><img src="image/logo.png"></a> -->
+		<a href="http://localhost:8000/shelter/map"><h3>Housing</h3></a>
+		<hr>
+		<a href="#"><h3>Profile</h3></a>
+		<a href='/shelter/list'><h3>Client List</h3></a>
+		<a href='/shelter/main'><h3>Check In</h3></a>
+		<img src="https://octopusgump.github.io/swd/usericon.png"/>
+
+		<a href="/"><h4>Logout</h4></a>
+	</div>
+
+	<div class="userInfo" ng-controller='shelterController'>
+		<div class="userProfile">
+			<h1 style="margin-bottom:0px">St Patrick Center</h1>
+			<h3 style="margin-top:0; font-weight:400;">Address: 800 N Tucker Blvd, St. Louis, MO 63101 </h3>
+			<table>
+				<tbody>
+					<tr>
+						<td class="tdHighlight"> <h3>Capacity</h3></td>
+						<td>100</td>
+						<td class="tdHighlight"> <h3>Available Space</h3></td>
+						<td>19</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+
+        <!-- bar graph -->
+        <h3>Average check-in number in different time of the day in the past month</h3>
+        <canvas id="bar" class="chart chart-bar" chart-data="data1" chart-labels="labels1" chart-series='series1'>
+        </canvas>
+
+        <br>
+        <h3>Homeless Condition of current client </h3>
+        <canvas style="margin-bottom:40px" id="doughnut" class="chart chart-doughnut"
+		  chart-data="data2" chart-labels="labels2" chart-options="options2">
+		</canvs> 
+
+	</div>
+
+
+<script>
+var app=angular.module('shelterProfile', ["chart.js"]);
+  app.controller('shelterController',function($scope,$http) {
+	// $scope.getData = function(){
+
+	// $http.put('http://localhost:8000/update', $scope.userid)
+ //      .then(function(response){
+ //        console.log(response.data.data[0]);
+ //        $scope.user = response.data.data[0];
+ //      }, function(){
+ //        console.log("send failure");
+
+ //    });
+	// }
+
+	// $scope.getData();
+
+	 // bar graph
+    $scope.labels1 = ['8-10am', '10-12pm', '12-2pm', '2-4pm', '4-6pm', '6-8pm'];
+    $scope.series1 = ['Check-in Number'];
+
+    $scope.data1 = [
+        [4, 5, 8, 12, 40, 34]
+    ];
+
+
+
+	//data
+	$scope.labels2 = ["< 10 days", "10 ~ 30 days", "30 ~ 90 days", "> 90 days"];
+    $scope.data2 = [10, 45, 25,15];
+    $scope.options2 ={
+
+        legend: {
+            display: true,
+            labels: {
+                fontSize: 20
+                // fontColor: 'rgb(255, 99, 132)'
+            }
+        }
+        
+    }
+
+
+	
+
+});
+
+
+</script>
+</body>
+</html>
